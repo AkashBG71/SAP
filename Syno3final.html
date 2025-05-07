@@ -1,0 +1,1454 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SSC CGL English Vocabulary Quiz</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+        integrity="sha512-9usAa10IRO0HhonpyAIVpjrylPvoDwiPUiKdWk5t3PyolY1cOd4DSE0Ga+ri4AuTroPR5aQvXU9xC6qOPnzFeg=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --color-background: #f7f7f7;
+            --color-background-night: #1a1a1a;
+            --color-text: #333;
+            --color-text-night: #eee;
+            --color-primary: #007bff;
+            --color-primary-dark: #0056b3;
+            --color-secondary: #6c757d;
+            --color-secondary-light: #8a939b;
+            --color-secondary-lighter: #aeb5bc;
+            --color-white: #fff;
+            --color-correct: #28a745;
+            --color-wrong: #dc3545;
+            --color-option-background: #fff;
+            --color-option-background-hover: #e9ecef;
+            --font-family-base: 'Inter', sans-serif;
+        }
+
+        body {
+            font-family: var(--font-family-base);
+            background-color: var(--color-background);
+            color: var(--color-text);
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            transition: background-color 0.5s ease, color 0.5s ease;
+            overflow-x: hidden;
+        }
+
+        .sidebar {
+            width: 280px;
+            background: var(--color-secondary);
+            color: var(--color-white);
+            padding: 25px;
+            position: fixed;
+            height: 100%;
+            overflow-y: auto;
+            padding-bottom: 120px; /* Increased padding bottom again */
+            transition: transform 0.5s ease, box-shadow 0.5s ease;
+            left: 0;
+            top: 0;
+            transform: translateX(-105%);
+            z-index: 1100;
+            box-shadow: -10px 0 20px rgba(0, 0, 0, 0.3);
+            display: flex; /* Use flexbox for sidebar content */
+            flex-direction: column;
+        }
+
+        .sidebar.show {
+            transform: translateX(0);
+            box-shadow: 10px 0 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .sidebar h2 {
+            margin-top: 0;
+            margin-bottom: 20px;
+            color: var(--color-white);
+            text-align: center;
+            opacity: 0;
+            transform: translateY(-20px);
+            animation: fadeInSlideDown 0.3s forwards 0.3s;
+        }
+
+         .sidebar-content {
+             flex-grow: 1; /* Allow content to grow */
+         }
+
+        .sidebar button {
+            display: block;
+            width: 100%;
+            padding: 12px 15px;
+            margin: 8px 0;
+            background: var(--color-secondary-light);
+            border: none;
+            color: var(--color-white);
+            cursor: pointer;
+            transition: background-color 0.4s ease, transform 0.4s ease, opacity 0.4s ease;
+            border-radius: 7px;
+            text-align: left;
+            opacity: 0;
+            transform: translateX(-20px);
+            animation: fadeInSlideRight 0.3s forwards calc(0.5s + var(--button-delay, 0s));
+        }
+
+        .sidebar button:hover {
+            background: var(--color-secondary-lighter);
+            transform: scale(1.03);
+        }
+
+         .sidebar .back-button {
+             margin-top: auto; /* Push back button to the bottom */
+             background: var(--color-primary);
+         }
+
+         .sidebar .back-button:hover {
+             background: var(--color-primary-dark);
+         }
+
+
+        .quiz-container {
+            background-color: var(--color-white);
+            color: var(--color-text);
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+            width: 95%;
+            max-width: 700px;
+            margin: 50px auto;
+            text-align: center;
+            flex: 1;
+            opacity: 0;
+            transform: translateY(30px);
+            animation: fadeInSlideUp 0.3s forwards 0.2s;
+        }
+
+        .quiz-title {
+            margin-bottom: 15px;
+            font-size: 2.5em;
+            color: var(--color-primary);
+            animation: pulseColor 2s infinite alternate;
+        }
+
+        .level-display {
+            font-size: 1.2em;
+            margin-bottom: 20px;
+            color: var(--color-secondary);
+            opacity: 0;
+            transform: translateY(-10px);
+            animation: fadeInSlideDown 0.3s forwards 0.4s;
+        }
+
+        .question {
+            font-size: 1.4em;
+            margin-bottom: 30px;
+            opacity: 0;
+            transform: translateY(-10px);
+            animation: fadeInSlideDown 0.3s forwards 0.6s;
+        }
+
+        .options {
+            display: grid;
+            gap: 15px;
+            animation-delay: 0.8s;
+            animation-fill-mode: backwards;
+        }
+
+        .option {
+            padding: 15px;
+            background-color: var(--color-option-background);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.4s ease, box-shadow 0.4s ease, transform 0.4s ease;
+            box-shadow: 3px 3px 7px rgba(0, 0, 0, 0.08);
+            font-size: 1.1em;
+            opacity: 0;
+            transform: scale(0.95);
+            animation: fadeInScaleUp 0.3s forwards calc(1s + var(--option-delay, 0s));
+            text-align: left;
+        }
+
+        .option:hover {
+            background-color: var(--color-option-background-hover);
+            box-shadow: 3px 3px 7px rgba(0, 0, 0, 0.15);
+            transform: scale(1.01);
+        }
+
+        .option.correct {
+            background-color: var(--color-correct) !important;
+            color: var(--color-white);
+            box-shadow: none;
+            animation: pulseCorrect 1.5s infinite alternate 1.2s;
+        }
+
+        .option.wrong {
+            background-color: var(--color-wrong) !important;
+            color: var(--color-white);
+            box-shadow: none;
+            animation: shakeWrong 0.3s ease-in-out 1.2s;
+        }
+
+        .option.disabled {
+            pointer-events: none;
+            opacity: 0.8;
+        }
+
+        .feedback {
+            margin-top: 20px;
+            font-weight: bold;
+            font-size: 1.2em;
+            opacity: 0;
+            transform: translateY(15px);
+            animation: fadeInSlideUp 0.3s forwards 1.4s;
+        }
+
+        .feedback.correct-feedback {
+            color: var(--color-correct);
+        }
+
+        .feedback.wrong-feedback {
+            color: var(--color-wrong);
+        }
+
+        .explanation,
+        .mnemonic,
+        .example-sentence,
+        .sentence-translation {
+            margin-top: 10px;
+            font-weight: normal;
+            font-size: 0.95em;
+            color: var(--color-secondary-light);
+            opacity: 0;
+            transform: translateY(15px);
+        }
+
+        .explanation { animation: fadeInSlideUp 0.3s forwards 1.6s; }
+        .mnemonic { animation: fadeInSlideUp 0.3s forwards 1.8s; }
+        .example-sentence {
+             font-style: italic;
+             animation: fadeInSlideUp 0.3s forwards 2.0s;
+        }
+        .sentence-translation { animation: fadeInSlideUp 0.3s forwards 2.2s; }
+
+
+        .night-mode .example-sentence,
+        .night-mode .sentence-translation,
+        .night-mode .mnemonic,
+        .night-mode .explanation {
+            color: var(--color-secondary-lighter);
+        }
+
+
+        .hidden {
+            display: none;
+        }
+
+        .night-mode {
+            background: var(--color-background-night);
+            color: var(--color-text-night);
+        }
+
+        .night-mode .quiz-container {
+            background-color: #2a2a2a;
+            color: var(--color-text-night);
+            box-shadow: 0 8px 16px rgba(255, 255, 255, 0.1);
+        }
+
+        .night-mode .option {
+            background-color: #333;
+            color: var(--color-text-night);
+        }
+
+        .night-mode .option:hover {
+            background-color: #444;
+        }
+
+
+        .menu-toggle {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background: var(--color-primary);
+            color: var(--color-white);
+            padding: 12px 20px;
+            border: none;
+            cursor: pointer;
+            border-radius: 7px;
+            z-index: 1101;
+            transition: background-color 0.4s ease, transform 0.4s ease;
+            box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
+        }
+
+        .menu-toggle:hover {
+            background: var(--color-primary-dark);
+            transform: scale(1.05);
+        }
+
+        .night-mode-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: var(--color-secondary);
+            color: var(--color-white);
+            padding: 12px 20px;
+            border: none;
+            cursor: pointer;
+            border-radius: 7px;
+            z-index: 1101;
+            transition: background-color 0.4s ease, transform 0.4s ease;
+            box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
+        }
+
+        .night-mode-toggle:hover {
+            background: var(--color-secondary-light);
+            transform: scale(1.05);
+        }
+
+
+        .scoreboard {
+            margin-top: 30px;
+            font-size: 1.1em;
+            font-weight: bold;
+            opacity: 0;
+            transform: translateY(20px);
+            animation: fadeInSlideUp 0.3s forwards 2.4s;
+        }
+
+        .scoreboard span {
+            font-weight: normal;
+            color: var(--color-primary);
+        }
+
+        .next-button-container {
+            margin-top: 30px;
+            opacity: 0;
+            transform: translateY(20px);
+            animation: fadeInSlideUp 0.3s forwards 2.6s;
+        }
+
+        .next-button {
+            padding: 12px 25px;
+            background-color: var(--color-primary);
+            color: var(--color-white);
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1.1em;
+            transition: background-color 0.3s ease, transform 0.3s ease;
+        }
+
+        .next-button:hover {
+            background-color: var(--color-primary-dark);
+            transform: scale(1.05);
+        }
+
+
+        .visually-hidden {
+            position: absolute !important;
+            width: 1px !important;
+            height: 1px !important;
+            padding: 0 !important;
+            margin: -1px !important;
+            overflow: hidden !important;
+            clip: rect(0, 0, 0, 0) !important;
+            -webkit-clip-path: inset(50%) !important;
+            clip-path: inset(50%) !important;
+            white-space: nowrap !important;
+            border: 0 !important;
+        }
+
+        /* Animations Keyframes */
+        @keyframes fadeInSlideDown {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeInSlideUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeInSlideRight {
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        @keyframes fadeInScaleUp {
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        @keyframes pulseColor {
+            0%, 100% {
+                color: var(--color-primary);
+            }
+
+            50% {
+                color: var(--color-primary-dark);
+            }
+        }
+
+        @keyframes pulseCorrect {
+            0%, 100% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.05);
+            }
+        }
+
+        @keyframes shakeWrong {
+            0%, 100% {
+                transform: translateX(0);
+            }
+
+            10%, 30%, 50%, 70%, 90% {
+                transform: translateX(-5px);
+            }
+
+            20%, 40%, 60%, 80% {
+                transform: translateX(5px);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 90%;
+                padding: 20px;
+                padding-bottom: 100px; /* Adjusted padding bottom for mobile */
+                box-shadow: -5px 0 10px rgba(0, 0, 0, 0.3);
+            }
+
+            .menu-toggle {
+                top: 10px;
+                left: 10px;
+                padding: 10px 15px;
+            }
+
+            .night-mode-toggle {
+                top: 10px;
+                right: 10px;
+                padding: 10px 15px;
+            }
+
+            .quiz-container {
+                padding: 25px;
+                margin-top: 70px;
+                border-radius: 10px;
+                box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+            }
+
+            .quiz-title {
+                font-size: 2em;
+                margin-bottom: 15px;
+            }
+
+            .level-display {
+                 font-size: 1em;
+                 margin-bottom: 15px;
+            }
+
+            .question {
+                font-size: 1.2em;
+                margin-bottom: 25px;
+            }
+
+            .options {
+                gap: 12px;
+            }
+
+            .option {
+                padding: 12px;
+                font-size: 1em;
+                border-radius: 6px;
+            }
+
+            .feedback {
+                margin-top: 15px;
+                font-size: 1.1em;
+            }
+
+            .scoreboard {
+                margin-top: 25px;
+                font-size: 1em;
+            }
+
+            .next-button-container {
+                margin-top: 25px;
+            }
+
+            .next-button {
+                padding: 10px 20px;
+                font-size: 1em;
+                border-radius: 6px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <button class="menu-toggle" onclick="toggleSidebar()" aria-label="Toggle navigation menu"
+        aria-expanded="false">☰</button>
+    <div class="sidebar hidden" id="sidebar">
+        <h2 id="sidebar-title">Quiz Menu</h2>
+        <div class="sidebar-content" id="sidebar-content">
+            </div>
+         <button class="back-button hidden" id="back-button" onclick="showQuizTypes()">Back to Quizzes</button>
+    </div>
+    <button class="night-mode-toggle" onclick="toggleNightMode()"><i class="fas fa-moon"
+            aria-hidden="true"></i> Night Mode</button>
+
+    <div class="quiz-container">
+        <h2 id="quiz-title" class="quiz-title"></h2>
+        <div id="level-display" class="level-display"></div> <div id="question" class="question"></div>
+        <div id="options" class="options"></div>
+        <div id="feedback-container"></div>
+        <div class="scoreboard">
+            Correct: <span id="correct-count">0</span> | Wrong: <span id="wrong-count">0</span>
+        </div>
+        <div id="next-button-container" class="next-button-container hidden">
+            <button id="next-question-button" class="next-button" onclick="nextQuestion()">Next Question</button>
+        </div>
+    </div>
+    <script>
+        // Vocabulary data structured by quiz type and levels
+        const vocabularyData = {
+            "Synonyms": [
+                // Level 1
+                [
+                    {
+                        word: "Abate",
+                        meaning: "To reduce in intensity",
+                        synonym: "Lessen",
+                        antonym: "Increase",
+                        exampleSentence: "The storm abated after an hour.",
+                        sentenceHindiTranslation: "तूफान एक घंटे बाद कम हो गया।",
+                        mnemonic: "Relate 'abate' to 'bate' which means to reduce or lessen something."
+                    },
+                    {
+                        word: "Benevolent",
+                        meaning: "Well-meaning and kindly",
+                        synonym: "Kind",
+                        antonym: "Malevolent",
+                        exampleSentence: "He was a benevolent leader who cared for his people.",
+                        sentenceHindiTranslation: "वह एक परोपकारी नेता थे जो अपने लोगों की परवाह करते थे।",
+                        mnemonic: "'Bene' means good, so benevolent means good-hearted."
+                    },
+                    {
+                        word: "Candid",
+                        meaning: "Truthful and straightforward",
+                        synonym: "Frank",
+                        antonym: "Deceptive",
+                        exampleSentence: "She gave a candid opinion about the movie.",
+                        sentenceHindiTranslation: "उसने फिल्म के बारे में एक स्पष्ट राय दी।",
+                        mnemonic: "Think of a 'can' that is 'did' open - showing everything inside, thus frank and honest."
+                    },
+                    {
+                        word: "Dauntless",
+                        meaning: "Showing fearlessness and determination",
+                        synonym: "Fearless",
+                        antonym: "Cowardly",
+                        exampleSentence: "The dauntless soldier faced the enemy bravely.",
+                        sentenceHindiTranslation: "निडर सिपाही ने बहादुरी से दुश्मन का सामना किया।",
+                        mnemonic: "'Daunt' means to intimidate, so 'dauntless' means not intimidated, fearless."
+                    },
+                    {
+                        word: "Efficacious",
+                        meaning: "Effective, producing the desired result",
+                        synonym: "Effective",
+                        antonym: "Ineffective",
+                        exampleSentence: "The medicine was efficacious in treating the illness.",
+                        sentenceHindiTranslation: "दवा बीमारी के इलाज में कारगर थी।",
+                        mnemonic: "Sounds like 'efficient', which means producing results."
+                    },
+                     {
+                        word: "Garrulous",
+                        meaning: "Excessively talkative, especially on trivial matters",
+                        synonym: "Talkative",
+                        antonym: "Taciturn",
+                        exampleSentence: "The garrulous old man entertained everyone with his stories.",
+                        sentenceHindiTranslation: "बातूनी बूढ़े व्यक्ति ने अपनी कहानियों से सभी का मनोरंजन किया।",
+                        mnemonic: "Sounds like 'gas rules' - someone who talks a lot is full of hot air (gas)."
+                    },
+                    {
+                        word: "Lucid",
+                        meaning: "Expressed clearly; easy to understand",
+                        synonym: "Clear",
+                        antonym: "Confusing",
+                        exampleSentence: "His explanation was lucid and easy to follow.",
+                        sentenceHindiTranslation: "उसकी व्याख्या स्पष्ट और समझने में आसान थी।",
+                        mnemonic: "'Lucid' sounds like 'light', and light makes things clear."
+                    },
+                    {
+                        word: "Meticulous",
+                        meaning: "Showing great attention to detail; very careful and precise",
+                        synonym: "Precise",
+                        antonym: "Careless",
+                        exampleSentence: "She is meticulous in her work, checking every detail.",
+                        sentenceHindiTranslation: "वह अपने काम में बहुत सावधानी बरतती है, हर विवरण की जाँच करती है।",
+                        mnemonic: "Think of 'meticulous' as 'meticulous-ly' checking everything."
+                    },
+                    {
+                        word: "Nebulous",
+                        meaning: "Vague or ill-defined",
+                        synonym: "Vague",
+                        antonym: "Clear",
+                        exampleSentence: "The plan was nebulous and lacked specific details.",
+                        sentenceHindiTranslation: "योजना अस्पष्ट थी और उसमें विशिष्ट विवरणों की कमी थी।",
+                        mnemonic: "Sounds like 'misty' or 'foggy', which are unclear."
+                    },
+                    {
+                        word: "Quintessential",
+                        meaning: "Representing the most perfect or typical example of a quality or class",
+                        synonym: "Typical",
+                        antonym: "Atypical",
+                        exampleSentence: "He is the quintessential example of a dedicated student.",
+                        sentenceHindiTranslation: "वह एक समर्पित छात्र का बेहतरीन उदाहरण है।",
+                        mnemonic: "Think of 'quint' as five, representing the 'fifth essence' or the purest form."
+                    }
+                ],
+                // Level 2
+                [
+                     {
+                        word: "Abnegation",
+                        meaning: "The act of renouncing or rejecting something",
+                        synonym: "Denial",
+                        antonym: "Acceptance",
+                        exampleSentence: "His abnegation of comfort for his beliefs was admirable.",
+                        sentenceHindiTranslation: "अपने विश्वासों के लिए सुख-सुविधाओं का उनका त्याग प्रशंसनीय था।",
+                        mnemonic: "Sounds like 'abs-negation' - negating the need for abs (comfort)."
+                    },
+                    {
+                        word: "Abridge",
+                        meaning: "To shorten (a book, movie, etc.) without losing the sense",
+                        synonym: "Shorten",
+                        antonym: "Expand",
+                        exampleSentence: "The book was abridged for younger readers.",
+                        sentenceHindiTranslation: "किताब को युवा पाठकों के लिए संक्षिप्त किया गया था।",
+                        mnemonic: "Think of a 'bridge' that shortens the distance."
+                    },
+                    {
+                        word: "Abandon",
+                        meaning: "To give up completely (a course of action, a practice, or a way of thinking)",
+                        synonym: "Forsake",
+                        antonym: "Retain",
+                        exampleSentence: "They had to abandon the sinking ship.",
+                        sentenceHindiTranslation: "उन्हें डूबते जहाज को छोड़ना पड़ा।",
+                        mnemonic: "Think of 'a-band-on' - leaving a band."
+                    },
+                    {
+                        word: "Abundant",
+                        meaning: "Existing or occurring in large amounts",
+                        synonym: "Plentiful",
+                        antonym: "Scarce",
+                        exampleSentence: "There are abundant natural resources in this region.",
+                        sentenceHindiTranslation: "इस क्षेत्र में प्रचुर मात्रा में प्राकृतिक संसाधन हैं।",
+                        mnemonic: "Sounds like 'a-bundant' - a large bundle."
+                    },
+                    {
+                        word: "Abettor",
+                        meaning: "A person who encourages or assists someone to do something wrong",
+                        synonym: "Accomplice",
+                        antonym: "Opponent",
+                        exampleSentence: "He was an abettor in the crime.",
+                        sentenceHindiTranslation: "वह अपराध में एक सहायक था।",
+                        mnemonic: "Sounds like 'a-better' - making someone better at doing something wrong."
+                    },
+                     {
+                        word: "Acumen",
+                        meaning: "The ability to make good judgments and quick decisions",
+                        synonym: "Sharpness",
+                        antonym: "Ignorance",
+                        exampleSentence: "Her business acumen led to the company's success.",
+                        sentenceHindiTranslation: "उनकी व्यावसायिक कुशाग्रता ने कंपनी की सफलता दिलाई।",
+                        mnemonic: "Sounds like 'accurate men' - accurate men have good judgment."
+                    },
+                    {
+                        word: "Adroit",
+                        meaning: "Skillful, especially in the use of the hands or body",
+                        synonym: "Skillful",
+                        antonym: "Clumsy",
+                        exampleSentence: "He was adroit at playing the piano.",
+                        sentenceHindiTranslation: "वह पियानो बजाने में निपुण थे।",
+                        mnemonic: "Sounds like 'a-droid' - droids are often skillful."
+                    },
+                    {
+                        word: "Adversity",
+                        meaning: "Difficulties; misfortune",
+                        synonym: "Misfortune",
+                        antonym: "Prosperity",
+                        exampleSentence: "He faced many adversities in his life.",
+                        sentenceHindiTranslation: "उन्होंने अपने जीवन में कई कठिनाइयों का सामना किया।",
+                        mnemonic: "Think of 'adverse' conditions, which are difficult."
+                    },
+                    {
+                        word: "Affluent",
+                        meaning: "Having a great deal of money; wealthy",
+                        synonym: "Wealthy",
+                        antonym: "Poor",
+                        exampleSentence: "He comes from an affluent family.",
+                        sentenceHindiTranslation: "वह एक धनी परिवार से आते हैं।",
+                        mnemonic: "Sounds like 'a-flowing' - money is flowing in."
+                    },
+                    {
+                        word: "Ameliorate",
+                        meaning: "To make (something bad or unsatisfactory) better",
+                        synonym: "Improve",
+                        antonym: "Worsen",
+                        exampleSentence: "Steps were taken to ameliorate the situation.",
+                        sentenceHindiTranslation: "स्थिति को सुधारने के लिए कदम उठाए गए।",
+                        mnemonic: "Sounds like 'a-melio-rate' - making the rating better."
+                    }
+                ]
+                // Add more levels for Synonyms here following the same structure
+                // Level 3, Level 4, ... Level 100
+            ],
+            "Antonyms": [
+                // Level 1
+                [
+                    {
+                        word: "Increase",
+                        meaning: "Become or make greater in size, amount, or intensity",
+                        synonym: "Grow",
+                        antonym: "Abate",
+                        exampleSentence: "The population of the city continues to increase.",
+                        sentenceHindiTranslation: "शहर की आबादी लगातार बढ़ रही है।",
+                        mnemonic: "Opposite of decrease."
+                    },
+                    {
+                        word: "Malevolent",
+                        meaning: "Having or showing a wish to do evil to others",
+                        synonym: "Wicked",
+                        antonym: "Benevolent",
+                        exampleSentence: "His malevolent stare sent shivers down her spine.",
+                        sentenceHindiTranslation: "उसकी दुर्भावनापूर्ण घूरती निगाहों से उसकी रीढ़ में सिहरन दौड़ गई।",
+                        mnemonic: "'Male' means bad, so malevolent means wishing bad things."
+                    },
+                    {
+                        word: "Deceptive",
+                        meaning: "Giving a misleading impression",
+                        synonym: "Misleading",
+                        antonym: "Candid",
+                        exampleSentence: "The advertisement was deceptive, promising more than it delivered.",
+                        sentenceHindiTranslation: "विज्ञापन भ्रामक था, जितना दिया गया था उससे कहीं अधिक का वादा किया गया था।",
+                        mnemonic: "Relate to 'deceive', meaning to mislead."
+                    },
+                    {
+                        word: "Cowardly",
+                        meaning: "Lacking courage",
+                        synonym: "Timid",
+                        antonym: "Dauntless",
+                        exampleSentence: "He was criticized for his cowardly behavior during the crisis.",
+                        sentenceHindiTranslation: "संकट के दौरान उसके कायरतापूर्ण व्यवहार के लिए उसकी आलोचना की गई।",
+                        mnemonic: "A 'coward' acts cowardly."
+                    },
+                    {
+                        word: "Ineffective",
+                        meaning: "Not producing any significant or desired effect",
+                        synonym: "Useless",
+                        antonym: "Efficacious",
+                        exampleSentence: "The old methods proved to be ineffective.",
+                        sentenceHindiTranslation: "पुराने तरीके अप्र प्रभावी साबित हुए।",
+                        mnemonic: "Opposite of effective."
+                    },
+                    {
+                        word: "Taciturn",
+                        meaning: "Reserved or uncommunicative in speech; saying little",
+                        synonym: "Reticent",
+                        antonym: "Garrulous",
+                        exampleSentence: "He was a taciturn man who rarely spoke.",
+                        sentenceHindiTranslation: "वह एक अल्पभाषी व्यक्ति थे जो शायद ही कभी बोलते थे।",
+                        mnemonic: "Sounds like 'take a turn' - they only speak when it's their turn, and even then, not much."
+                    },
+                    {
+                        word: "Confusing",
+                        meaning: "Difficult to understand; unclear",
+                        synonym: "Perplexing",
+                        antonym: "Lucid",
+                        exampleSentence: "The instructions were confusing and hard to follow.",
+                        sentenceHindiTranslation: "निर्देश भ्रमित करने वाले और पालन करने में कठिन थे।",
+                        mnemonic: "Opposite of clear."
+                    },
+                    {
+                        word: "Careless",
+                        meaning: "Not giving sufficient attention to avoid danger or mistakes",
+                        synonym: "Negligent",
+                        antonym: "Meticulous",
+                        exampleSentence: "His careless attitude led to many errors.",
+                        sentenceHindiTranslation: "उनकी लापरवाह रवैये के कारण कई गलतियाँ हुईं।",
+                        mnemonic: "Lack of care."
+                    },
+                    {
+                        word: "Clear",
+                        meaning: "Easy to perceive, understand, or interpret",
+                        synonym: "Obvious",
+                        antonym: "Nebulous",
+                        exampleSentence: "The instructions were clear and easy to understand.",
+                        sentenceHindiTranslation: "निर्देश स्पष्ट और समझने में आसान थे।",
+                        mnemonic: "Opposite of vague."
+                    },
+                    {
+                        word: "Atypical",
+                        meaning: "Not representative of a type, group, or body; unusual",
+                        synonym: "Unusual",
+                        antonym: "Quintessential",
+                        exampleSentence: "His response was atypical for him.",
+                        sentenceHindiTranslation: "उनकी प्रतिक्रिया उनके लिए असामान्य थी।",
+                        mnemonic: "'A' means not, so atypical means not typical."
+                    }
+                ],
+                 // Level 2
+                [
+                    {
+                        word: "Acceptance",
+                        meaning: "The action of consenting to receive or undertake something offered",
+                        synonym: "Approval",
+                        antonym: "Abnegation",
+                        exampleSentence: "His acceptance of the challenge surprised everyone.",
+                        sentenceHindiTranslation: "चुनौती की उनकी स्वीकृति ने सभी को चौंका दिया।",
+                        mnemonic: "Accepting something."
+                    },
+                    {
+                        word: "Expand",
+                        meaning: "Become or make larger or more extensive",
+                        synonym: "Increase",
+                        antonym: "Abridge",
+                        exampleSentence: "The universe is constantly expanding.",
+                        sentenceHindiTranslation: "ब्रह्मांड लगातार फैल रहा है।",
+                        mnemonic: "Making something wider or bigger."
+                    },
+                    {
+                        word: "Retain",
+                        meaning: "Continue to have (something); keep possession of",
+                        synonym: "Keep",
+                        antonym: "Abandon",
+                        exampleSentence: "He decided to retain ownership of the company.",
+                        sentenceHindiTranslation: "उन्होंने कंपनी का स्वामित्व बनाए रखने का फैसला किया।",
+                        mnemonic: "Think of 're-train' - training again to keep skills."
+                    },
+                    {
+                        word: "Scarce",
+                        meaning: "Insufficient for the demand",
+                        synonym: "Limited",
+                        antonym: "Abundant",
+                        exampleSentence: "Food was scarce during the drought.",
+                        sentenceHindiTranslation: "सूखे के दौरान भोजन दुर्लभ था।",
+                        mnemonic: "Sounds like 'scare us' - the scarcity of something scares us."
+                    },
+                    {
+                        word: "Opponent",
+                        meaning: "Someone who competes with or opposes another in a contest, game, or argument",
+                        synonym: "Rival",
+                        antonym: "Abettor",
+                        exampleSentence: "He defeated his opponent in the final match.",
+                        sentenceHindiTranslation: "उन्होंने फाइनल मैच में अपने प्रतिद्वंद्वी को हराया।",
+                        mnemonic: "Someone who is 'opposed' to you."
+                    },
+                    {
+                        word: "Ignorance",
+                        meaning: "Lack of knowledge or information",
+                        synonym: "Unawareness",
+                        antonym: "Acumen",
+                        exampleSentence: "His ignorance of the law did not excuse him.",
+                        sentenceHindiTranslation: "कानून के प्रति उनकी अज्ञानता ने उन्हें बरी नहीं किया।",
+                        mnemonic: "Being 'ignorant'."
+                    },
+                     {
+                        word: "Clumsy",
+                        meaning: "Awkward in movement or handling things",
+                        synonym: "Awkward",
+                        antonym: "Adroit",
+                        exampleSentence: "He was a clumsy dancer.",
+                        sentenceHindiTranslation: "वह एक अनाड़ी नर्तक था।",
+                        mnemonic: "Tripping or dropping things."
+                    },
+                    {
+                        word: "Prosperity",
+                        meaning: "The state of being successful in material terms; flourishing financially",
+                        synonym: "Success",
+                        antonym: "Adversity",
+                        exampleSentence: "The country enjoyed a period of economic prosperity.",
+                        sentenceHindiTranslation: "देश ने आर्थिक समृद्धि का दौर देखा।",
+                        mnemonic: "Think of 'prosper' - to be successful."
+                    },
+                    {
+                        word: "Poor",
+                        meaning: "Lacking sufficient money to live at a standard considered comfortable or normal in a society",
+                        synonym: "Impoverished",
+                        antonym: "Affluent",
+                        exampleSentence: "Many families in the area are poor.",
+                        sentenceHindiTranslation: "इलाके में कई परिवार गरीब हैं।",
+                        mnemonic: "Lack of wealth."
+                    },
+                    {
+                        word: "Worsen",
+                        meaning: "Make or become worse",
+                        synonym: "Deteriorate",
+                        antonym: "Ameliorate",
+                        exampleSentence: "His condition began to worsen.",
+                        sentenceHindiTranslation: "उनकी हालत बिगड़ने लगी।",
+                        mnemonic: "Becoming worse."
+                    }
+                ]
+                 // Add more levels for Antonyms here following the same structure
+                 // Level 3, Level 4, ... Level 100
+            ],
+            "Phrasal Verbs": [
+                // Level 1
+                [
+                    {
+                        word: "Look up",
+                        meaning: "To search for or find information, especially in a book or on the internet.",
+                        exampleSentence: "I had to look up the meaning of the word in the dictionary.",
+                        sentenceHindiTranslation: "मुझे शब्द का अर्थ शब्दकोश में देखना पड़ा।",
+                        mnemonic: "Imagine looking upwards towards a shelf of books to find information."
+                    },
+                    {
+                        word: "Put off",
+                        meaning: "To delay or postpone something.",
+                        exampleSentence: "Don't put off your studies until the last minute.",
+                        sentenceHindiTranslation: "अपनी पढ़ाई को आखिरी मिनट तक मत टालो।",
+                        mnemonic: "Putting something 'off' to a later time."
+                    },
+                    {
+                        word: "Take after",
+                        meaning: "To resemble or be similar to someone, especially a parent or other relative.",
+                        exampleSentence: "She takes after her mother in terms of her artistic talent.",
+                        sentenceHindiTranslation: "वह अपनी कलात्मक प्रतिभा के मामले में अपनी माँ जैसी है।",
+                        mnemonic: "Taking on the characteristics 'after' someone else."
+                    },
+                    {
+                        word: "Turn down",
+                        meaning: "To refuse or reject something.",
+                        exampleSentence: "He turned down the job offer because it was too far.",
+                        sentenceHindiTranslation: "उसने नौकरी का प्रस्ताव ठुकरा दिया क्योंकि यह बहुत दूर था।",
+                        mnemonic: "Turning something 'down' as in rejecting it."
+                    },
+                    {
+                        word: "Get along with",
+                        meaning: "To have a good relationship with someone.",
+                        exampleSentence: "I get along well with my colleagues at work.",
+                        sentenceHindiTranslation: "मैं काम पर अपने सहकर्मियों के साथ अच्छी तरह से घुलमिल जाता हूँ।",
+                        mnemonic: "Getting 'along' smoothly with someone."
+                    },
+                    {
+                        word: "Break down",
+                        meaning: "To stop working or functioning properly (for machinery or systems); also to lose control of one's emotions.",
+                        exampleSentence: "My car broke down on the way to the exam.",
+                        sentenceHindiTranslation: "परीक्षा के रास्ते में मेरी कार खराब हो गई।",
+                        mnemonic: "Breaking something 'down' into pieces, causing it to stop working."
+                    },
+                    {
+                        word: "Come up with",
+                        meaning: "To think of or produce an idea or solution.",
+                        exampleSentence: "She came up with a brilliant idea for the project.",
+                        sentenceHindiTranslation: "उसे परियोजना के लिए एक शानदार विचार आया।",
+                        mnemonic: "An idea 'coming up' into your mind."
+                    },
+                    {
+                        word: "Fall behind",
+                        meaning: "To be slower or less advanced than someone or something else.",
+                        exampleSentence: "He fell behind in his studies after missing classes.",
+                        sentenceHindiTranslation: "कक्षाएं छूटने के बाद वह अपनी पढ़ाई में पिछड़ गया।",
+                        mnemonic: "Falling 'behind' others in progress."
+                    },
+                    {
+                        word: "Get over",
+                        meaning: "To recover from an illness or a difficult situation.",
+                        exampleSentence: "It took her a long time to get over the flu.",
+                        sentenceHindiTranslation: "उसे फ्लू से उबरने में काफी समय लगा।",
+                        mnemonic: "Getting 'over' an obstacle or difficulty."
+                    },
+                    {
+                        word: "Run out of",
+                        meaning: "To have no more of something.",
+                        exampleSentence: "We ran out of milk this morning.",
+                        sentenceHindiTranslation: "आज सुबह हमारे पास दूध खत्म हो गया।",
+                        mnemonic: "Running until you are 'out of' something."
+                    }
+                ],
+                 // Level 2
+                 [
+                    {
+                        word: "Set up",
+                        meaning: "To arrange or organize something.",
+                        exampleSentence: "They set up a meeting for next week.",
+                        sentenceHindiTranslation: "उन्होंने अगले हफ्ते के लिए एक बैठक आयोजित की।",
+                        mnemonic: "Setting something 'up' to make it ready."
+                    },
+                    {
+                        word: "Take off",
+                        meaning: "To leave the ground (for aircraft); to remove clothing; to become successful quickly.",
+                        exampleSentence: "The plane took off on time.",
+                        sentenceHindiTranslation: "विमान समय पर उड़ान भर गया।",
+                        mnemonic: "Leaving the surface."
+                    },
+                    {
+                        word: "Give up",
+                        meaning: "To stop trying to do something; to surrender.",
+                        exampleSentence: "Don't give up on your dreams.",
+                        sentenceHindiTranslation: "अपने सपनों को मत छोड़ो।",
+                        mnemonic: "Giving something away, surrendering."
+                    },
+                    {
+                        word: "Go through",
+                        meaning: "To experience a difficult or unpleasant situation; to examine something carefully.",
+                        exampleSentence: "She went through a lot of pain after the accident.",
+                        sentenceHindiTranslation: "दुर्घटना के बाद उन्हें बहुत दर्द हुआ।",
+                        mnemonic: "Passing 'through' a difficult time."
+                    },
+                    {
+                        word: "Bring up",
+                        meaning: "To raise a child; to mention a topic.",
+                        exampleSentence: "She was brought up by her grandparents.",
+                        sentenceHindiTranslation: "उसे उसके दादा-दादी ने पाला।",
+                        mnemonic: "Bringing a child 'up'."
+                    },
+                    {
+                        word: "Call off",
+                        meaning: "To cancel something.",
+                        exampleSentence: "The game was called off due to rain.",
+                        sentenceHindiTranslation: "बारिश के कारण खेल रद्द कर दिया गया।",
+                        mnemonic: "Calling something 'off' the schedule."
+                    },
+                    {
+                        word: "Carry out",
+                        meaning: "To perform a task or complete a plan.",
+                        exampleSentence: "They carried out the instructions carefully.",
+                        sentenceHindiTranslation: "उन्होंने निर्देशों का सावधानीपूर्वक पालन किया।",
+                        mnemonic: "Carrying a plan 'out' to completion."
+                    },
+                    {
+                        word: "Find out",
+                        meaning: "To discover information.",
+                        exampleSentence: "I need to find out when the meeting is.",
+                        sentenceHindiTranslation: "मुझे पता लगाना है कि बैठक कब है।",
+                        mnemonic: "Finding something that was previously hidden 'out'."
+                    },
+                    {
+                        word: "Look for",
+                        meaning: "To try to find something or someone.",
+                        exampleSentence: "I'm looking for my keys.",
+                        sentenceHindiTranslation: "मैं अपनी चाबियाँ ढूंढ रहा हूँ।",
+                        mnemonic: "Looking 'for' something you want to find."
+                    },
+                    {
+                        word: "Make up",
+                        meaning: "To invent a story or excuse; to reconcile after a disagreement; to compensate for something.",
+                        exampleSentence: "She made up a story about why she was late.",
+                        sentenceHindiTranslation: "उसने देर से आने के बारे to why she was late.",
+                        sentenceHindiTranslation: "उसने देर से आने के बारे में एक कहानी गढ़ी।",
+                        mnemonic: "Making something 'up' in your mind."
+                    }
+                 ]
+                // Add more levels for Phrasal Verbs here following the same structure
+                // Level 3, Level 4, ... Level 100
+            ]
+        };
+
+        const quizzes = {};
+
+        // Function to create quizzes from vocabulary data
+        // This function now just assigns the pre-structured data
+        function createQuizzes() {
+            quizzes["Synonyms"] = vocabularyData["Synonyms"].map(level => {
+                 return level.map(wordData => {
+                     const options = [wordData.synonym];
+                     const otherSynonyms = vocabularyData["Synonyms"].flat().filter(item => item.word !== wordData.word); // Get all synonyms from all levels
+
+                     // Add incorrect options from other synonyms
+                     while (options.length < 4) {
+                         const randomSynonymData = otherSynonyms[Math.floor(Math.random() * otherSynonyms.length)];
+                          if (randomSynonymData && !options.includes(randomSynonymData.synonym)) { // Check if randomSynonymData is valid
+                             options.push(randomSynonymData.synonym);
+                         } else if (options.length < 4) { // Fallback if cannot find unique synonym
+                             options.push("None of the above");
+                         }
+                     }
+                     shuffleArray(options);
+
+                     return {
+                         question: `What is the synonym of '${wordData.word}'?`,
+                         options: options,
+                         correct: options.indexOf(wordData.synonym),
+                         explanation: `The synonym of '${wordData.word}' (${wordData.meaning}) is '${wordData.synonym}'. Its antonym is '${wordData.antonym}'.`,
+                         exampleSentence: wordData.exampleSentence,
+                         sentenceHindiTranslation: wordData.sentenceHindiTranslation,
+                         mnemonic: wordData.mnemonic
+                     };
+                 });
+             });
+
+             quizzes["Antonyms"] = vocabularyData["Antonyms"].map(level => {
+                 return level.map(wordData => {
+                     const options = [wordData.antonym];
+                     const otherAntonyms = vocabularyData["Antonyms"].flat().filter(item => item.word !== wordData.word); // Get all antonyms from all levels
+
+                     // Add incorrect options from other antonyms
+                     while (options.length < 4) {
+                         const randomAntonymData = otherAntonyms[Math.floor(Math.random() * otherAntonyms.length)];
+                         if (randomAntonymData && !options.includes(randomAntonymData.antonym)) { // Check if randomAntonymData is valid
+                             options.push(randomAntonymData.antonym);
+                         } else if (options.length < 4) { // Fallback if cannot find unique antonym
+                             options.push("None of the above");
+                         }
+                     }
+                     shuffleArray(options);
+
+                     return {
+                         question: `What is the antonym of '${wordData.word}'?`,
+                         options: options,
+                         correct: options.indexOf(wordData.antonym),
+                         explanation: `The antonym of '${wordData.word}' (${wordData.meaning}) is '${wordData.antonym}'. Its synonym is '${wordData.synonym}'.`,
+                         exampleSentence: wordData.exampleSentence,
+                         sentenceHindiTranslation: wordData.sentenceHindiTranslation,
+                         mnemonic: wordData.mnemonic
+                     };
+                 });
+             });
+
+
+             quizzes["Phrasal Verbs"] = vocabularyData["Phrasal Verbs"].map(level => {
+                 return level.map(phraseData => {
+                     const options = [phraseData.meaning];
+                      const otherPhrasalVerbs = vocabularyData["Phrasal Verbs"].flat().filter(item => item.word !== phraseData.word); // Get all phrasal verbs from all levels
+
+                      // Add incorrect options from other phrasal verb meanings
+                     while (options.length < 4) {
+                         const randomPhraseData = otherPhrasalVerbs[Math.floor(Math.random() * otherPhrasalVerbs.length)];
+                          if (randomPhraseData && !options.includes(randomPhraseData.meaning)) { // Check if randomPhraseData is valid
+                             options.push(randomPhraseData.meaning);
+                         } else if (options.length < 4) { // Fallback if cannot find unique meaning
+                             options.push("None of the above");
+                         }
+                     }
+                     shuffleArray(options);
+
+                     return {
+                         question: `What is the meaning of the phrasal verb '${phraseData.word}'?`,
+                         options: options,
+                         correct: options.indexOf(phraseData.meaning),
+                         explanation: `The meaning of '${phraseData.word}' is '${phraseData.meaning}'.`,
+                         exampleSentence: phraseData.exampleSentence,
+                         sentenceHindiTranslation: phraseData.sentenceHindiTranslation,
+                         mnemonic: phraseData.mnemonic
+                     };
+                 });
+             });
+        }
+
+        // Utility function to shuffle array (Fisher-Yates Shuffle)
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+        }
+
+        createQuizzes(); // Call the function to generate quizzes
+
+        let currentQuiz = "Synonyms"; // Default quiz
+        let currentLevelIndex = 0; // Added level index
+        let currentQuestionIndex = 0;
+        let correctAnswers = 0;
+        let wrongAnswers = 0;
+        let nightMode = false;
+        let optionsElements = [];
+        let nextButtonContainer = document.getElementById('next-button-container');
+        let levelDisplayElement = document.getElementById('level-display'); // Get level display element
+        let sidebarTitleElement = document.getElementById('sidebar-title');
+        let sidebarContentElement = document.getElementById('sidebar-content');
+        let backButtonElement = document.getElementById('back-button');
+
+
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const menuToggle = document.querySelector('.menu-toggle');
+            sidebar.classList.toggle('show');
+            sidebar.classList.toggle('hidden');
+
+            const expanded = menuToggle.getAttribute('aria-expanded') === 'true' || false;
+            menuToggle.setAttribute('aria-expanded', !expanded);
+        }
+
+        function showQuizTypes() {
+             sidebarTitleElement.innerText = "Quiz Menu";
+             sidebarContentElement.innerHTML = ''; // Clear current content
+             backButtonElement.classList.add('hidden'); // Hide back button
+
+             // Add quiz type buttons
+             const quizTypes = Object.keys(quizzes);
+             quizTypes.forEach((type, index) => {
+                 const button = document.createElement('button');
+                 button.innerText = `${type} Quiz`;
+                 button.onclick = () => showLevels(type);
+                 button.style.setProperty('--button-delay', `${index * 0.1}s`);
+                 sidebarContentElement.appendChild(button);
+             });
+        }
+
+        function showLevels(quizType) {
+            currentQuiz = quizType; // Set the current quiz type
+            sidebarTitleElement.innerText = `${quizType} Levels`;
+            sidebarContentElement.innerHTML = ''; // Clear current content
+            backButtonElement.classList.remove('hidden'); // Show back button
+
+            const numberOfLevels = quizzes[quizType].length;
+
+            // Add level buttons
+            for (let i = 0; i < numberOfLevels; i++) {
+                const button = document.createElement('button');
+                button.innerText = `Level ${i + 1}`;
+                button.onclick = () => selectLevel(quizType, i);
+                 button.style.setProperty('--button-delay', `${i * 0.05}s`); // Slightly faster animation for levels
+                sidebarContentElement.appendChild(button);
+            }
+        }
+
+        function selectLevel(quizType, levelIndex) {
+            currentQuiz = quizType;
+            currentLevelIndex = levelIndex;
+            currentQuestionIndex = 0; // Start from the first question of the selected level
+            correctAnswers = 0; // Reset scores
+            wrongAnswers = 0;
+            document.getElementById('correct-count').innerText = correctAnswers;
+            document.getElementById('wrong-count').innerText = wrongAnswers;
+
+            toggleSidebar(); // Hide sidebar
+            loadQuestion(); // Load the first question of the selected level
+        }
+
+
+        function loadQuestion() {
+            const quizTitleElement = document.getElementById('quiz-title');
+            const questionElement = document.getElementById('question');
+            const optionsContainer = document.getElementById('options');
+            const feedbackContainer = document.getElementById('feedback-container');
+
+            // Reset animations
+            quizTitleElement.style.animation = '';
+            levelDisplayElement.style.animation = '';
+            questionElement.style.animation = '';
+            optionsContainer.style.opacity = 0;
+            nextButtonContainer.classList.add('hidden');
+
+
+            optionsElements = [];
+            optionsContainer.innerHTML = '';
+            feedbackContainer.innerHTML = '';
+            quizTitleElement.innerText = `${currentQuiz} Quiz`;
+            levelDisplayElement.innerText = `Level ${currentLevelIndex + 1}/${quizzes[currentQuiz].length}`;
+
+            const currentLevel = quizzes[currentQuiz][currentLevelIndex];
+            const q = currentLevel[currentQuestionIndex];
+            questionElement.innerText = q.question;
+
+            q.options.forEach((opt, i) => {
+                const div = document.createElement('div');
+                div.classList.add('option');
+                div.innerText = opt;
+                div.onclick = () => checkAnswer(i);
+                optionsContainer.appendChild(div);
+                optionsElements.push(div);
+                div.style.opacity = 0;
+                div.style.transform = 'scale(0.95)';
+                 div.style.setProperty('--option-delay', `${i * 0.1}s`);
+            });
+
+            // Trigger animations
+            setTimeout(() => {
+                quizTitleElement.style.animation = 'fadeInSlideDown 0.3s forwards';
+                levelDisplayElement.style.animation = 'fadeInSlideDown 0.3s forwards 0.2s';
+                questionElement.style.animation = 'fadeInSlideDown 0.3s forwards 0.4s';
+                optionsContainer.style.opacity = 1;
+                 optionsElements.forEach(option => {
+                     option.style.animation = `fadeInScaleUp 0.3s forwards var(--option-delay)`;
+                 });
+            }, 50);
+        }
+
+        function checkAnswer(selectedIndex) {
+            const currentLevel = quizzes[currentQuiz][currentLevelIndex];
+            const q = currentLevel[currentQuestionIndex];
+            const options = document.querySelectorAll('.option');
+            const selectedOption = options[selectedIndex];
+
+            if (selectedIndex === q.correct) {
+                selectedOption.classList.add('correct');
+                correctAnswers++;
+                document.getElementById('correct-count').innerText = correctAnswers;
+                showFeedback(true, q);
+
+            } else {
+                selectedOption.classList.add('wrong');
+                wrongAnswers++;
+                document.getElementById('wrong-count').innerText = wrongAnswers;
+                options[q.correct].classList.add('correct');
+                showFeedback(false, q);
+            }
+
+            options.forEach(option => option.classList.add('disabled'));
+            nextButtonContainer.classList.remove('hidden');
+             nextButtonContainer.style.opacity = 0;
+             nextButtonContainer.style.transform = 'translateY(20px)';
+             nextButtonContainer.style.animation = 'fadeInSlideUp 0.3s forwards 0.2s';
+        }
+
+        function showFeedback(isCorrect, questionData) {
+            const feedbackContainer = document.getElementById('feedback-container');
+            feedbackContainer.innerHTML = '';
+
+            const feedbackDiv = document.createElement('div');
+            feedbackDiv.classList.add('feedback');
+
+            if (isCorrect) {
+                feedbackDiv.classList.add('correct-feedback');
+                feedbackDiv.innerHTML = '<i class="fas fa-check-circle"></i> Correct!';
+            } else {
+                feedbackDiv.classList.add('wrong-feedback');
+                feedbackDiv.innerHTML = '<i class="fas fa-times-circle"></i> Incorrect.';
+            }
+            feedbackContainer.appendChild(feedbackDiv);
+
+            // Add explanation
+            const explanationDiv = document.createElement('div');
+            explanationDiv.classList.add('explanation');
+            explanationDiv.innerText = questionData.explanation;
+            feedbackContainer.appendChild(explanationDiv);
+
+             // Add mnemonic
+             if (questionData.mnemonic) {
+                 const mnemonicDiv = document.createElement('div');
+                 mnemonicDiv.classList.add('mnemonic');
+                 mnemonicDiv.innerText = `Mnemonic: ${questionData.mnemonic}`;
+                 feedbackContainer.appendChild(mnemonicDiv);
+             }
+
+            // Add example sentence (English)
+            if (questionData.exampleSentence) {
+                const exampleDiv = document.createElement('div');
+                exampleDiv.classList.add('example-sentence');
+                exampleDiv.innerText = `Example: ${questionData.exampleSentence}`;
+                feedbackContainer.appendChild(exampleDiv);
+            }
+
+            // Add sentence translation (Hindi)
+            if (questionData.sentenceHindiTranslation) {
+                const translationDiv = document.createElement('div');
+                translationDiv.classList.add('sentence-translation');
+                translationDiv.innerText = `Hindi Translation: ${questionData.sentenceHindiTranslation}`;
+                feedbackContainer.appendChild(translationDiv);
+            }
+
+             // Trigger feedback animations
+             const feedbackElements = feedbackContainer.querySelectorAll('div');
+             feedbackElements.forEach((el, index) => {
+                 el.style.opacity = 0;
+                 el.style.transform = 'translateY(15px)';
+                 el.style.animation = `fadeInSlideUp 0.3s forwards ${0.2 + (index * 0.2)}s`;
+             });
+        }
+
+        function nextQuestion() {
+            currentQuestionIndex++;
+            const currentLevel = quizzes[currentQuiz][currentLevelIndex];
+
+            if (currentQuestionIndex < currentLevel.length) {
+                loadQuestion();
+            } else {
+                // Level complete, move to the next level
+                currentLevelIndex++;
+                currentQuestionIndex = 0; // Reset question index for the new level
+
+                if (currentLevelIndex < quizzes[currentQuiz].length) {
+                    // More levels available, load the next level's first question
+                    loadQuestion();
+                } else {
+                    // All levels completed for this quiz
+                    showQuizCompleteMessage();
+                }
+            }
+        }
+
+         function showQuizCompleteMessage() {
+             const quizContainer = document.querySelector('.quiz-container');
+             quizContainer.innerHTML = `
+                 <h2 class="quiz-title">Quiz Complete!</h2>
+                 <p>Correct Answers: ${correctAnswers}</p>
+                 <p>Wrong Answers: ${wrongAnswers}</p>
+                 <button class="next-button" onclick="restartQuiz()">Restart Quiz</button>
+             `;
+              quizContainer.style.opacity = 0;
+              quizContainer.style.transform = 'translateY(30px)';
+              quizContainer.style.animation = 'fadeInSlideUp 0.3s forwards';
+         }
+
+
+        function restartQuiz() {
+            // Restart the current quiz at the current level
+            currentQuestionIndex = 0;
+            correctAnswers = 0;
+            wrongAnswers = 0;
+
+             // Restore initial quiz container content structure
+             const quizContainer = document.querySelector('.quiz-container');
+             quizContainer.innerHTML = `
+                <h2 id="quiz-title" class="quiz-title"></h2>
+                <div id="level-display" class="level-display"></div> <div id="question" class="question"></div>
+                <div id="options" class="options"></div>
+                <div id="feedback-container"></div>
+                <div class="scoreboard">
+                    Correct: <span id="correct-count">0</span> | Wrong: <span id="wrong-count">0</span>
+                </div>
+                <div id="next-button-container" class="next-button-container hidden">
+                    <button id="next-question-button" class="next-button" onclick="nextQuestion()">Next Question</button>
+                </div>
+             `;
+             // Re-get elements after restoring innerHTML
+             nextButtonContainer = document.getElementById('next-button-container');
+             levelDisplayElement = document.getElementById('level-display');
+             document.getElementById('correct-count').innerText = correctAnswers;
+             document.getElementById('wrong-count').innerText = wrongAnswers;
+
+            loadQuestion();
+        }
+
+        function toggleNightMode() {
+            nightMode = !nightMode;
+            document.body.classList.toggle('night-mode');
+             // Update feedback element colors if already displayed
+             const feedbackElements = document.querySelectorAll('.feedback-container > div');
+             feedbackElements.forEach(el => {
+                 if (nightMode) {
+                     el.classList.add('night-mode-sentence');
+                 } else {
+                     el.classList.remove('night-mode-sentence');
+                 }
+             });
+        }
+
+        window.onload = () => {
+            createQuizzes(); // Ensure quizzes are created on load
+            showQuizTypes(); // Show quiz types on load
+            document.getElementById('sidebar').classList.add('hidden'); // Keep sidebar hidden initially
+             // Load the first question of the default quiz and level after a short delay
+             setTimeout(() => {
+                 loadQuestion();
+             }, 100); // Small delay to allow sidebar setup
+        };
+    </script>
+</body>
+
+</html>
